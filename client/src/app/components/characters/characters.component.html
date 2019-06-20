@@ -1,0 +1,44 @@
+<!-- <ul class="list-group" *ngFor="let char of characters">
+    <li class="list-group-item">{{char.url}}</li>
+  </ul> -->
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Gender</th>
+        <th scope="col">Culture</th>
+        <th scope="col">Born</th>
+        <th scope="col">Died</th>
+        <th scope="col">Titles</th>
+        <th scope="col">Aliases</th>
+        <th scope="col">Father</th>
+        <th scope="col">Mother</th>
+        <th scope="col">Spouse</th>
+        <th scope="col">Allegiances</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let char of characters | paginate:characters">        
+        <td>{{char.gender}}</td>
+        <td>{{char.culture}}</td>
+        <td>{{char.born}}</td>
+        <td>{{char.died}}</td>
+        <td>{{char.titles}}</td>
+        <td>{{char.aliases}}</td>
+        <td>{{char.father}}</td>
+        <td>{{char.mother}}</td>
+        <td>{{char.spouse}}</td>
+        <td>{{char.allegiances}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="container offset-md-10" >
+    <div class="btn-group col-md-10" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-secondary" (click)="prevPage()">Prev</button>
+        
+        <button type="button" class="btn btn-secondary" (click)="nextPage()">Next</button>
+    </div>
+</div>
+

@@ -1,0 +1,23 @@
+
+<div class="container offset-md-10" >
+    <div class="btn-group col-md-10" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-secondary" (click)="prevPage()">Prev</button>
+        
+        <button type="button" class="btn btn-secondary" (click)="nextPage()">Next</button>
+    </div>
+</div>  
+  
+<div class="col-md-4" *ngFor="let house of houses" >
+  <div class="card text-center">
+    <div class="card-header">
+      <h3>{{house.name}}</h3>
+    </div> 
+    <div class="class title"></div>   
+    <div class="card-body">
+      <h5> <div class="card-title"> {{house.region}} </div> </h5>
+      <p>Words:  {{house.words}}</p>       
+      <p>Current Lord: {{house.currentLord}}</p>  
+    </div>
+  </div>
+  </div>
+
