@@ -15,49 +15,61 @@ const request_1 = __importDefault(require("request"));
 class LoaderController {
     LoadAllData(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var category = ["books", "characters", "houses"];
-            var no = [1, 43, 9]; //each category page no taking page size as 50
-            var bookPromises = []; //will store the promise sent after making http request to the book api
-            var characterPromises = []; //will store the promise sent after making http request to the character api
-            var housePromises = []; //will store the promise sent after making http request to the houses api
             var books = []; //will contain all the books after resolving the promise
             var characters = []; //will contain all the characters after resolving the promise
             var houses = []; //will contain all the houses after resolving the promise
-            for (var i = 0; i < category.length; i++) {
-                //run the loop for each category
-                for (var j = 0; j < no[i]; j++) {
-                    if (i === 0) {
-                        request_1.default(`https://anapioficeandfire.com/api/${category[i]}?page=${j + 1}&pageSize=50`, { json: true }, (err, res, body) => {
-                            if (err) {
-                                return console.log(err);
-                            }
-                            console.log(body.url);
-                            console.log(body.explanation);
-                        });
+            const results = yield Promise.all([this.loadBooks(1), this.loadCharacters(43), this.loadHouses(9)]);
+            return results;
+        });
+    }
+    loadBooks(pages) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var bookPromises = []; //will store the promise sent after making http request to the book api
+            for (let index = 0; index < pages; index++) {
+                yield request_1.default(`https://anapioficeandfire.com/api/books?page=${index + 1}&pageSize=50`, (err, res, body) => {
+                    if (err) {
+                        return console.log(err);
                     }
-                    //for each category run the loop as many times as its page no taking page size as 50                
-                    if (i === 1) {
-                        request_1.default(`https://anapioficeandfire.com/api/${category[i]}?page=${j + 1}&pageSize=50`, { json: true }, (err, res, body) => {
-                            if (err) {
-                                return console.log(err);
-                            }
-                            console.log(body.url);
-                            console.log(body.explanation);
-                        });
+                    if (res) {
+                        bookPromises.push(body);
                     }
-                    if (i === 2) {
-                        request_1.default(`https://anapioficeandfire.com/api/${category[i]}?page=${j + 1}&pageSize=50`, { json: true }, (err, res, body) => {
-                            if (err) {
-                                return console.log(err);
-                            }
-                            console.log(body.url);
-                            console.log(body.explanation);
-                        });
+                });
+            }
+            return bookPromises;
+        });
+    }
+    loadCharacters(pages) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var characterPromises = []; //will store the promise sent after making http request to the character api
+            for (let index = 0; index < pages; index++) {
+                yield request_1.default(`https://anapioficeandfire.com/api/characters?page=${index + 1}&pageSize=50`, (err, res, body) => {
+                    if (err) {
+                        return console.log(err);
                     }
-                } //end of inside for loop 
-            } //end of the o
+                    if (res) {
+                        characterPromises.push(body);
+                    }
+                });
+            }
+            return characterPromises;
+        });
+    }
+    loadHouses(pages) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var housesPromises = []; //will store the promise sent after making http request to the character api
+            for (let index = 0; index < pages; index++) {
+                yield request_1.default(`https://anapioficeandfire.com/api/houses?page=${index + 1}&pageSize=50`, (err, res, body) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    if (res) {
+                        housesPromises.push(body);
+                    }
+                });
+            }
+            return housesPromises;
         });
     }
 }
-const loaderController = new LoaderController;
+const loaderController = new LoaderController();
 exports.default = loaderController;

@@ -1,50 +1,57 @@
 import { Request, Response } from 'express';
-import  request  from 'request';
+import request from 'request';
+import axios from "axios";
 
 
 class LoaderController {
 
-    public async LoadAllData(req: Request, res: Response): Promise<void> {
-        var category = ["books", "characters", "houses"];
-        var no = [1, 43, 9]; //each category page no taking page size as 50
-        var bookPromises = []; //will store the promise sent after making http request to the book api
-        var characterPromises = []; //will store the promise sent after making http request to the character api
-        var housePromises = []; //will store the promise sent after making http request to the houses api
+    public async LoadAllData(req: Request, res: Response): Promise<any> {
         var books = []; //will contain all the books after resolving the promise
         var characters = []; //will contain all the characters after resolving the promise
         var houses = []; //will contain all the houses after resolving the promise
-        for (var i = 0; i < category.length; i++) {
-            //run the loop for each category
-            for (var j = 0; j < no[i]; j++) {
+        const results = await Promise.all([this.loadBooks(1), this.loadCharacters(43), this.loadHouses(9)])
+        return results
+    }
 
-                if (i === 0){
-                    request(`https://anapioficeandfire.com/api/${category[i]}?page=${j + 1}&pageSize=50`, { json: true }, (err: any , res : any, body : any) => {
-                        if (err) { return console.log(err); }
-                        console.log(body.url);
-                        console.log(body.explanation);
-                      });
-                }         
-                //for each category run the loop as many times as its page no taking page size as 50                
-                if (i === 1) {
-
-                    request(`https://anapioficeandfire.com/api/${category[i]}?page=${j + 1}&pageSize=50`, { json: true }, (err: any , res : any, body : any) => {
-                        if (err) { return console.log(err); }
-                        console.log(body.url);
-                        console.log(body.explanation);
-                      });
+    public async loadBooks(pages: number): Promise<any[]> {
+        var bookPromises: any = []; //will store the promise sent after making http request to the book api
+        for (let index = 0; index < pages; index++) {
+            await request(`https://anapioficeandfire.com/api/books?page=${index + 1}&pageSize=50`, (err: any, res: any, body: any) => {
+                if (err) { return console.log(err); }
+                if (res) {
+                    bookPromises.push(body);
                 }
-                if (i === 2) {
-                    request(`https://anapioficeandfire.com/api/${category[i]}?page=${j + 1}&pageSize=50`, { json: true }, (err: any , res : any, body : any) => {
-                        if (err) { return console.log(err); }
-                        console.log(body.url);
-                        console.log(body.explanation);
-                      });
-                }
+            });
+        }
+        return bookPromises;
+    }
 
-            } //end of inside for loop 
-        } //end of the o
+    public async loadCharacters(pages: number): Promise<any[]> {
+        var characterPromises: any = []; //will store the promise sent after making http request to the character api
+        for (let index = 0; index < pages; index++) {
+            await request(`https://anapioficeandfire.com/api/characters?page=${index + 1}&pageSize=50`, (err: any, res: any, body: any) => {
+                if (err) { return console.log(err); }
+                if (res) {
+                    characterPromises.push(body);
+                }
+            });
+        }
+        return characterPromises;
+    }
+
+    public async loadHouses(pages: number): Promise<any[]> {
+        var housesPromises: any = []; //will store the promise sent after making http request to the character api
+        for (let index = 0; index < pages; index++) {
+            await request(`https://anapioficeandfire.com/api/houses?page=${index + 1}&pageSize=50`, (err: any, res: any, body: any) => {
+                if (err) { return console.log(err); }
+                if (res) {
+                    housesPromises.push(body);
+                }
+            });
+        }
+        return housesPromises;
     }
 }
 
-const loaderController = new LoaderController;
+const loaderController = new LoaderController();
 export default loaderController;
