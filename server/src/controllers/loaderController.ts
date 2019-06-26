@@ -1,54 +1,72 @@
 import { Request, Response } from 'express';
-import request from 'request';
+import request from 'request-promise';
 import axios from "axios";
 
 
 class LoaderController {
 
-    public async LoadAllData(req: Request, res: Response): Promise<any> {
-        var books = []; //will contain all the books after resolving the promise
-        var characters = []; //will contain all the characters after resolving the promise
-        var houses = []; //will contain all the houses after resolving the promise
-        const results = await Promise.all([this.loadBooks(1), this.loadCharacters(43), this.loadHouses(9)])
-        return results
+    public async LoadAllData(req: Request, res: Response){    
+        const loader = new LoaderController();     
+        try {                    
+            const result = await Promise.all([loader.loadBooks(1), loader.loadCharacters(43), loader.loadBooks(9)])
+            res.send(result)
+        } catch (error) {
+            console.log(error)
+        }        
     }
 
-    public async loadBooks(pages: number): Promise<any[]> {
+
+    async loadBooks(pages: number) {
         var bookPromises: any = []; //will store the promise sent after making http request to the book api
-        for (let index = 0; index < pages; index++) {
-            await request(`https://anapioficeandfire.com/api/books?page=${index + 1}&pageSize=50`, (err: any, res: any, body: any) => {
-                if (err) { return console.log(err); }
-                if (res) {
-                    bookPromises.push(body);
-                }
-            });
-        }
-        return bookPromises;
+        try {
+            var index = 0
+            // for (let index = 0; index < pages; index++) {
+                 await request.get(`https://anapioficeandfire.com/api/books?page=${index + 1}&pageSize=50`)
+                 .then((body) => {
+                    bookPromises.push(JSON.parse(body))
+                 })
+                 .catch ((err) => { bookPromises = { "origin": err.toString() }; });                                                           
+            // }
+            return bookPromises;
+        } catch (error) {
+            console.log(error)
+        }           
     }
 
-    public async loadCharacters(pages: number): Promise<any[]> {
-        var characterPromises: any = []; //will store the promise sent after making http request to the character api
-        for (let index = 0; index < pages; index++) {
-            await request(`https://anapioficeandfire.com/api/characters?page=${index + 1}&pageSize=50`, (err: any, res: any, body: any) => {
-                if (err) { return console.log(err); }
-                if (res) {
-                    characterPromises.push(body);
-                }
-            });
-        }
-        return characterPromises;
+    async loadCharacters(pages: number) {
+        var charsPromises: any = []; //will store the promise sent after making http request to the book api
+        try {
+            var index = 0
+            for (let index = 0; index < pages; index++) {
+                 await request.get(`https://anapioficeandfire.com/api/characters?page=${index + 1}&pageSize=50`)
+                 .then((body) => {
+                    charsPromises.push(JSON.parse(body))
+                 })
+                 .catch ((err) => { charsPromises = { "origin": err.toString() }; });                                                           
+            }
+            return charsPromises;
+        } catch (error) {
+            console.log(error)
+        }           
     }
 
-    public async loadHouses(pages: number): Promise<any[]> {
+
+
+    public loadHouses(pages: number) : any {
         var housesPromises: any = []; //will store the promise sent after making http request to the character api
-        for (let index = 0; index < pages; index++) {
-            await request(`https://anapioficeandfire.com/api/houses?page=${index + 1}&pageSize=50`, (err: any, res: any, body: any) => {
-                if (err) { return console.log(err); }
-                if (res) {
-                    housesPromises.push(body);
-                }
-            });
+        try {
+            for (let index = 0; index < pages; index++) {
+                request(`https://anapioficeandfire.com/api/houses?page=${index + 1}&pageSize=50`, (err: any, res: any, body: any) => {
+                    if (err) { return console.log(err); }
+                    if (res) {
+                        housesPromises.push(body);
+                    }
+                });
+            }
+        } catch (error) {
+            console.log(error)
         }
+        
         return housesPromises;
     }
 }
